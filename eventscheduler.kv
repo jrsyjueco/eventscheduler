@@ -1,0 +1,1186 @@
+#:kivy 1.11.1
+#:import Factory kivy.factory.Factory
+#:import CalendarWidget KivyCalendar
+
+<CustomBackground@Widget>
+    background_color: 0, 0, 0, 0
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<CustomLabel@Label>:
+    markup: True
+    color: 0, 0, 0, 1
+    text_size: self.size
+    halign: 'left'
+    valign: 'center'
+
+<CustomAnchorLayout@AnchorLayout+CustomBackground>:
+    background_color: 255, 255, 255, 0.16
+
+<CustomBoxLayout@BoxLayout+CustomBackground>:
+    background_color: 255, 255, 255, 1
+
+<CustomScrollView@ScrollView+CustomBackground>:
+    background_color: 241, 241, 241, 0.5
+    scroll_type: ['bars', 'content']
+    bar_width: '10dp'
+    effect_cls: 'ScrollEffect'
+
+<WarningDialog>:
+    title: root.title
+    title_align: 'center'
+    auto_dismiss: False
+    size_hint: 0.4, 0.3
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '2sp'
+
+        Label:
+            markup: True
+            text: root.message
+            text_size: self.size
+            halign: 'center'
+            valign: 'center'
+            size_hint_y: 0.7
+        Button:
+            text: 'Close'
+            size_hint: 0.3, 0.3
+            pos_hint: {'right': 1}
+            on_release: root.dismiss()
+
+<DeletionDialog>:
+    title: root.title
+    title_align: 'center'
+    auto_dismiss: False
+    size_hint: 0.4, 0.3
+
+    BoxLayout:
+        id: deletion_container
+        orientation: 'vertical'
+        padding: '2sp'
+
+        Label:
+            text: root.message
+            text_size: self.size
+            halign: 'center'
+            valign: 'center'
+            size_hint_y: 0.7
+
+<ProgressDialog>:
+    title: root.title
+    title_align: 'center'
+    auto_dismiss: False
+    size_hint: 0.4, 0.3
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '2sp'
+        spacing: '5sp'
+
+        Label:
+            markup: True
+            text: root.message
+            text_size: self.size
+            halign: 'center'
+            valign: 'center'
+            size_hint_y: 0.35
+        ProgressBar:
+            id: progress
+            max: 100
+            size_hint_y: 0.35
+        Button:
+            id: close
+            text: 'Close'
+            size_hint: 0.3, 0.3
+            pos_hint: {'right': 1}
+            on_release: root.dismiss()
+
+<ContactEditor>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.9
+        Label:
+            text: 'First Name'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: firstname
+            multiline: False
+            text: root.firstname
+            hint_text: 'Must be filled in'
+            write_tab: False
+        Label:
+            text: 'Last Name'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: lastname
+            multiline: False
+            text: root.lastname
+            hint_text: 'Must be filled in'
+            write_tab: False
+        Label:
+            text: 'Email'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: email
+            multiline: False
+            text: root.email
+            hint_text: 'Must be filled in and of a valid format'
+            write_tab: False
+        Label:
+            markup: True
+            text: '[i]' + root.error + '[/i]'
+            text_size: self.size
+            font_size: '13sp'
+            halign: 'center'
+            valign: 'center'
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.6, 0.14
+        pos_hint: {'right': 1}
+        Button:
+            text: 'Save'
+            disabled: True if len(firstname.text) <= 0 or len(lastname.text) <= 0 or len(email.text) <= 0 else False
+            on_release:
+                root.on_save_button_click(' '.join(str(firstname.text).split()), ' '.join(str(lastname.text).split()), \
+                ' '.join(str(email.text).split()))
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<ContactPicker>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.9
+
+        CustomBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: 0.1
+            Label:
+                markup: True
+                color: 0, 0, 0, 1
+                text: '[b]First Name[/b]'
+            Label:
+                markup: True
+                color: 0, 0, 0, 1
+                text: '[b]Last Name[/b]'
+            Label:
+                markup: True
+                color: 0, 0, 0, 1
+                text: '[b]Email[/b]'
+        ScrollView:
+            GridLayout:
+                id: contact_picker
+                cols: 1
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: 30
+    BoxLayout
+        orientation: 'horizontal'
+        size_hint_y: 0.1
+        Button:
+            size_hint_x: 0.15
+            pos_hint: {'left': 1}
+            text: 'Add Row'
+            on_release: root.on_add_row_button_click()
+        BoxLayout:
+            size_hint_x: 0.45
+        BoxLayout:
+            spacing: '2sp'
+            orientation: 'horizontal'
+            size_hint_x: 0.3
+            pos_hint: {'right': 1}
+            Button:
+                id: save
+                text: 'Save'
+                on_release: root.on_save_button_click(contact_picker)
+            Button:
+                text: 'Cancel'
+                on_release: root.on_cancel_button_click()
+
+<VenueEditor>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.9
+        Label:
+            text: 'Room'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: room
+            multiline: False
+            text: root.room
+            hint_text: 'Must be filled in'
+            write_tab: False
+        Label:
+            text: 'Capacity'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: capacity
+            multiline: False
+            text: root.capacity
+            hint_text: 'Must be filled in and an integer'
+            input_filter: 'int'
+            write_tab: False
+        Label:
+            text: 'Email'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: email
+            multiline: False
+            text: root.email
+            hint_text: 'Must be filled in and of a valid format'
+            write_tab: False
+        Label:
+            markup: True
+            text: '[i]' + root.error + '[/i]'
+            text_size: self.size
+            font_size: '13sp'
+            halign: 'center'
+            valign: 'center'
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.6, 0.14
+        pos_hint: {'right': 1}
+        Button:
+            text: 'Save'
+            disabled: True if len(room.text) <= 0 or len(capacity.text) <= 0 or len(email.text) <= 0 else False
+            on_release:
+                root.on_save_button_click(' '.join(str(room.text).split()), ' '.join(str(capacity.text).split()), \
+                ' '.join(str(email.text).split()))
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<VenuePicker>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_y: 0.9
+        Label:
+            text: 'Room'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: room
+            multiline: False
+            hint_text: 'Must be filled in'
+            write_tab: False
+        Label:
+            text: 'Capacity'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: capacity
+            multiline: False
+            hint_text: 'Must be filled in and an integer'
+            input_filter: 'int'
+            write_tab: False
+        Label:
+            text: 'Email'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+        TextInput:
+            id: email
+            multiline: False
+            hint_text: 'Must be filled in and of a valid format'
+            write_tab: False
+        Label:
+            markup: True
+            text: '[i]' + root.error + '[/i]'
+            text_size: self.size
+            font_size: '13sp'
+            halign: 'center'
+            valign: 'center'
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.6, 0.14
+        pos_hint: {'right': 1}
+        Button:
+            text: 'Save'
+            disabled: True if len(room.text) <= 0 or len(capacity.text) <= 0 or len(email.text) <= 0 else False
+            on_release:
+                root.on_save_button_click(' '.join(str(room.text).split()), ' '.join(str(capacity.text).split()), \
+                ' '.join(str(email.text).split()))
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<CategoryEditor>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '5sp'
+        size_hint_y: 0.7
+        Label:
+            text: 'Category'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+            size_hint_y: 0.3
+        TextInput:
+            id: category
+            text: root.category
+            hint_text: 'Must be filled in'
+            multiline: False
+            size_hint_y: 0.4
+        Label:
+            markup: True
+            text: '[i]' + root.error + '[/i]'
+            text_size: self.size
+            font_size: '13sp'
+            halign: 'center'
+            valign: 'center'
+            size_hint_y: 0.3
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.6, 0.3
+        pos_hint: {'right': 1}
+        Button:
+            text: 'Save'
+            disabled: True if len(category.text) <= 0 else False
+            on_release: root.on_save_button_click(' '.join(str(category.text).split()))
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<CategoryPicker>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '5sp'
+        size_hint_y: 0.7
+        Label:
+            text: 'Category'
+            text_size: self.size
+            halign: 'left'
+            valign: 'center'
+            size_hint_y: 0.3
+        TextInput:
+            id: category
+            hint_text: 'Must be filled in'
+            multiline: False
+            size_hint_y: 0.4
+        Label:
+            markup: True
+            text: '[i]' + root.error + '[/i]'
+            text_size: self.size
+            font_size: '13sp'
+            halign: 'center'
+            valign: 'center'
+            size_hint_y: 0.3
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.6, 0.3
+        pos_hint: {'right': 1}
+        Button:
+            text: 'Save'
+            disabled: True if len(category.text) <= 0 else False
+            on_release: root.on_save_button_click(' '.join(str(category.text).split()))
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<EventEditorCategory>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '2sp'
+        spacing: '10sp'
+
+        ScrollView:
+            effect_cls: 'ScrollEffect'
+            GridLayout:
+                id: eec_container
+                cols: 4
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: 72
+        BoxLayout
+            orientation: 'horizontal'
+            size_hint_y: 0.11
+            Button:
+                size_hint_x: 0.15
+                pos_hint: {'left': 1}
+                text: 'Previous'
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.current = 'editor'
+            BoxLayout:
+                size_hint_x: 0.45
+            BoxLayout:
+                spacing: '2sp'
+                orientation: 'horizontal'
+                size_hint_x: 0.3
+                pos_hint: {'right': 1}
+                Button:
+                    text: 'Save'
+                    on_release: root.on_save_button_click()
+                Button:
+                    text: 'Cancel'
+                    on_release: root.on_cancel_button_click()
+
+<EventPickerCategory>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '2sp'
+        spacing: '10sp'
+
+        ScrollView:
+            effect_cls: 'ScrollEffect'
+            GridLayout:
+                id: epc_container
+                cols: 4
+                size_hint_y: None
+                height: self.minimum_height
+                row_default_height: 72
+        BoxLayout
+            orientation: 'horizontal'
+            size_hint_y: 0.11
+            Button:
+                size_hint_x: 0.15
+                pos_hint: {'left': 1}
+                text: 'Previous'
+                on_press:
+                    root.manager.transition.direction = 'right'
+                    root.manager.current = 'picker'
+            BoxLayout:
+                size_hint_x: 0.45
+            BoxLayout:
+                spacing: '2sp'
+                orientation: 'horizontal'
+                size_hint_x: 0.3
+                pos_hint: {'right': 1}
+                Button:
+                    text: 'Save'
+                    on_release: root.on_save_button_click()
+                Button:
+                    text: 'Cancel'
+                    on_release: root.on_cancel_button_click()
+
+<EventEditor>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '2sp'
+        spacing: '10sp'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.9
+            Label:
+                text: 'Title'
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                size_hint_y: 0.1
+            TextInput:
+                id: title
+                multiline: False
+                text: root.title
+                hint_text: 'Must be filled in'
+                write_tab: False
+                size_hint_y: 0.1
+            Label:
+                text: 'Description'
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                size_hint_y: 0.1
+            TextInput:
+                id: description
+                text: root.description
+                hint_text: 'Must be filled in'
+                write_tab: False
+                size_hint_y: 0.7
+        BoxLayout:
+            spacing: '2sp'
+            orientation: 'horizontal'
+            size_hint: 0.3, 0.1
+            pos_hint: {'right': 1}
+            Button:
+                text: 'Next'
+                disabled: True if len(title.text) <= 0 or len(description.text) <= 0 else False
+                on_release:
+                    root.on_next_button_click(' '.join(str(title.text).split()), \
+                    ' '.join(str(description.text).split()))
+            Button:
+                text: 'Cancel'
+                on_release: root.on_cancel_button_click()
+
+<EventPicker>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '2sp'
+        spacing: '10sp'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint_y: 0.9
+            Label:
+                text: 'Title'
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                size_hint_y: 0.1
+            TextInput:
+                id: title
+                multiline: False
+                hint_text: 'Must be filled in'
+                write_tab: False
+                size_hint_y: 0.1
+            Label:
+                text: 'Description'
+                text_size: self.size
+                halign: 'left'
+                valign: 'center'
+                size_hint_y: 0.1
+            TextInput:
+                id: description
+                hint_text: 'Must be filled in'
+                write_tab: False
+                size_hint_y: 0.7
+        BoxLayout:
+            spacing: '2sp'
+            orientation: 'horizontal'
+            size_hint: 0.3, 0.1
+            pos_hint: {'right': 1}
+            Button:
+                id: next
+                text: 'Next'
+                disabled: True if len(title.text) <= 0 or len(description.text) <= 0 else False
+                on_release:
+                    root.on_next_button_click(' '.join(str(title.text).split()), \
+                    ' '.join(str(description.text).split()))
+            Button:
+                text: 'Cancel'
+                on_release: root.on_cancel_button_click()
+
+<AddEventLimit@DropDown>:
+    max_height: 163
+
+<AddEventStyle@SpinnerOption>:
+    text: root.text
+    text_size: 200, root.height
+    halign: 'center'
+    valign: 'center'
+    shorten: True
+    shorten_from: 'right'
+    is_shortened: True
+    size_hint_y: None
+
+<TimeWidgetLimit@DropDown>:
+    max_height: 107
+
+<TimeWidget@BoxLayout>:
+    orientation: 'horizontal'
+
+    Spinner:
+        id: hour
+        text: '9'
+        values: '9', '10', '11', '12', '1', '2', '3', '4'
+        sync_height: True
+        dropdown_cls: Factory.TimeWidgetLimit
+    Spinner:
+        id: minute
+        text: '00'
+        values: '00', '15', '30', '45'
+        sync_height: True
+
+<DateTimePicker>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: '10sp'
+        size_hint_y: 0.9
+
+        CalendarWidget:
+            id: cal
+        BoxLayout:
+            orientation: 'vertical'
+            BoxLayout:
+                spacing: '5sp'
+                orientation: 'vertical'
+                size_hint_y: 0.2
+                Label:
+                    text: 'Start Time'
+                    text_size: self.size
+                    halign: 'left'
+                TimeWidget:
+                    id: tstart
+            BoxLayout:
+                spacing: '5sp'
+                orientation: 'vertical'
+                size_hint_y: 0.2
+                Label:
+                    text: 'End Time'
+                    text_size: self.size
+                    halign: 'left'
+                TimeWidget:
+                    id: tend
+            BoxLayout:
+                size_hint_y: 0.6
+
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.3, 0.1
+        pos_hint: {'right': 1}
+        Button:
+            text: 'Save'
+            on_release: root.on_save_button_click(cal, tstart, tend)
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<FormID>:
+    orientation: 'vertical'
+    padding: '2sp'
+    spacing: '10sp'
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '5sp'
+        size_hint_y: 0.6
+        Label:
+            text: 'Enter the latest form ID down below'
+            text_size: self.size
+            halign: 'center'
+            valign: 'center'
+            size_hint_y: 0.55
+        TextInput:
+            id: formid
+            hint_text: 'Must be filled in and an integer'
+            multiline: False
+            input_filter: 'int'
+            size_hint_y: 0.45
+    BoxLayout:
+        spacing: '2sp'
+        orientation: 'horizontal'
+        size_hint: 0.6, 0.3
+        pos_hint: {'right': 1}
+        Button:
+            id: save
+            text: 'Save'
+            disabled: True if len(formid.text) <= 0 else False
+            on_press: root.on_save_button_click(formid.text)
+        Button:
+            text: 'Cancel'
+            on_release: root.on_cancel_button_click()
+
+<ContactListItem>:
+    orientation: 'horizontal'
+
+    CheckBox:
+        id: state
+        color: 0, 0, 0, 1
+        size_hint_x: 0.08
+    BoxLayout:
+        size_hint_x: 0.04
+    BoxLayout:
+        orientation: 'horizontal'
+        CustomLabel:
+            text: root.firstname if len(root.firstname) <= 20 else root.firstname[0:20] + '...'
+        CustomLabel:
+            text: root.lastname if len(root.lastname) <= 20 else root.lastname[0:20] + '...'
+        CustomLabel:
+            text: root.email if len(root.email) <= 20 else root.email[0:20] + '...'
+    Button:
+        text: 'Edit'
+        size_hint_x: 0.075
+        on_release: root.on_edit_button_click(root.firstname, root.lastname, root.email)
+
+<VenueListItem>:
+    orientation: 'horizontal'
+
+    CheckBox:
+        id: state
+        color: 0, 0, 0, 1
+        size_hint_x: 0.08
+    BoxLayout:
+        size_hint_x: 0.04
+    BoxLayout:
+        orientation: 'horizontal'
+        CustomLabel:
+            text: root.room if len(root.room) <= 20 else root.room[0:20] + '...'
+        CustomLabel:
+            text: root.capacity if len(root.capacity) <= 20 else root.capacity[0:20] + '...'
+        CustomLabel:
+            text: root.email if len(root.email) <= 20 else root.email[0:20] + '...'
+    Button:
+        text: 'Edit'
+        size_hint_x: 0.075
+        on_release: root.on_edit_button_click(root.room, root.capacity, root.email)
+
+<CategoryListItem>:
+    orientation: 'horizontal'
+
+    CheckBox:
+        id: state
+        color: 0, 0, 0, 1
+        size_hint_x: 0.08
+    BoxLayout:
+        size_hint_x: 0.04
+    BoxLayout:
+        orientation: 'horizontal'
+        CustomLabel:
+            text: root.category if len(root.category) <= 100 else root.category[0:100] + '...'
+    Button:
+        text: 'Edit'
+        size_hint_x: 0.075
+        on_release: root.on_edit_button_click(root.category)
+
+<EventListItem>:
+    orientation: 'horizontal'
+
+    CheckBox:
+        id: state
+        color: 0, 0, 0, 1
+        size_hint_x: 0.085
+    BoxLayout:
+        size_hint_x: 0.04
+    BoxLayout:
+        orientation: 'horizontal'
+        CustomLabel:
+            text: root.title if len(root.title) <= 140 else root.title[0:140] + '...'
+            size_hint_x: 0.18
+        BoxLayout:
+            size_hint_x: 0.02
+        CustomLabel:
+            text: root.description if len(root.description) <= 500 else root.description[0:500] + '...'
+            valign: 'center' if len(root.description) <= 500 else 'top'
+            size_hint_x: 0.59
+    BoxLayout:
+        size_hint_x: 0.075
+    Button:
+        text: 'Edit'
+        size_hint: 0.075, 0.3
+        on_release: root.on_edit_button_click(root.title, root.description)
+
+<SchedulerListItem>:
+    orientation: 'horizontal'
+
+    CheckBox:
+        id: state
+        color: 0, 0, 0, 1
+        size_hint_x: 0.075
+    BoxLayout:
+        size_hint_x: 0.04
+        CustomLabel:
+            id: export_only_label
+            markup: True
+    BoxLayout:
+        orientation: 'horizontal'
+        CustomLabel:
+            text: root.name if len(root.name) <= 20 else root.name[0:20] + '...'
+        CustomLabel:
+            text: root.location if len(root.location) <= 20 else root.location[0:20] + '...'
+        CustomLabel:
+            text: root.date + ' ' + root.tstart + ' ' + root.tstart_am_pm
+        CustomLabel:
+            text: root.date + ' ' + root.tend + ' ' + root.tend_am_pm
+
+<CustomSettings>:
+    interface_cls: 'CustomSettingsInterface'
+
+<EventSchedulerMain>:
+    TabbedPanel:
+        do_default_tab: False
+        tab_width: self.width / 6
+        tab_pos: 'top_mid'
+        size_hint: 1, 1
+
+        TabbedPanelItem:
+            text: 'Contacts'
+            BoxLayout:
+                padding: '2sp'
+                spacing: '2sp'
+                orientation: 'vertical'
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.075
+                    Button:
+                        text: 'Add Contact(s)'
+                        on_release: root.on_add_contact_button_click()
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.925
+
+                    BoxLayout:
+                        size_hint_y: 0.0675
+                        Button:
+                            text: 'Delete Selected'
+                            on_release: root.on_delete_contact_button_click()
+                    CustomBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.0675
+
+                        CheckBox:
+                            id: contact_list_checkbox
+                            size_hint_x: 0.08
+                            color: 0, 0, 0, 1
+                            on_active: root.on_select_all_checkbox(self.active, contact_list_container)
+                        BoxLayout:
+                            size_hint_x: 0.04
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            CustomLabel:
+                                text: '[b]First Name[/b]'
+                            CustomLabel:
+                                text: '[b]Last Name[/b]'
+                            CustomLabel:
+                                text: '[b]Email[/b]'
+                        BoxLayout:
+                            size_hint_x: 0.075
+                    CustomScrollView:
+                        GridLayout:
+                            id: contact_list_container
+                            cols: 1
+                            size_hint_y: None
+                            height: self.minimum_height
+                            row_default_height: 44
+
+        TabbedPanelItem:
+            text: 'Venues'
+            BoxLayout:
+                padding: '2sp'
+                spacing: '2sp'
+                orientation: 'vertical'
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.075
+                    Button:
+                        text: 'Add Venue'
+                        on_release: root.on_add_venue_button_click()
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.925
+
+                    BoxLayout:
+                        size_hint_y: 0.0675
+                        Button:
+                            text: 'Delete Selected'
+                            on_release: root.on_delete_venue_click()
+                    CustomBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.0675
+
+                        CheckBox:
+                            id: venue_list_checkbox
+                            size_hint_x: 0.08
+                            color: 0, 0, 0, 1
+                            on_active: root.on_select_all_checkbox(self.active, venue_list_container)
+                        BoxLayout:
+                            size_hint_x: 0.04
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            CustomLabel:
+                                text: '[b]Room[/b]'
+                            CustomLabel:
+                                text: '[b]Capacity[/b]'
+                            CustomLabel:
+                                text: '[b]Email[/b]'
+                        BoxLayout:
+                            size_hint_x: 0.075
+                    CustomScrollView:
+                        GridLayout:
+                            id: venue_list_container
+                            cols: 1
+                            size_hint_y: None
+                            height: self.minimum_height
+                            row_default_height: 44
+
+        TabbedPanelItem:
+            text: 'Categories'
+            BoxLayout:
+                padding: '2sp'
+                spacing: '2sp'
+                orientation: 'vertical'
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.075
+                    Button:
+                        text: 'Add Category'
+                        on_release: root.on_add_category_button_click()
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.925
+
+                    BoxLayout:
+                        size_hint_y: 0.0675
+                        Button:
+                            text: 'Delete Selected'
+                            on_release: root.on_delete_category_click()
+                    CustomBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.0675
+
+                        CheckBox:
+                            id: category_list_checkbox
+                            size_hint_x: 0.08
+                            color: 0, 0, 0, 1
+                            on_active: root.on_select_all_checkbox(self.active, category_list_container)
+                        BoxLayout:
+                            size_hint_x: 0.04
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            CustomLabel:
+                                text: '[b]Category[/b]'
+                        BoxLayout:
+                            size_hint_x: 0.075
+                    CustomScrollView:
+                        GridLayout:
+                            id: category_list_container
+                            cols: 1
+                            size_hint_y: None
+                            height: self.minimum_height
+                            row_default_height: 44
+
+        TabbedPanelItem:
+            text: 'Events'
+            BoxLayout:
+                padding: '2sp'
+                spacing: '2sp'
+                orientation: 'vertical'
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.075
+                    Button:
+                        text: 'Add Event Type'
+                        on_release: root.on_add_event_type_button_click()
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.925
+
+                    BoxLayout:
+                        size_hint_y: 0.0675
+                        Button:
+                            text: 'Delete Selected'
+                            on_release: root.on_delete_event_type_button_click()
+                    CustomBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.0675
+
+                        CheckBox:
+                            id: event_list_checkbox
+                            size_hint_x: 0.085
+                            color: 0, 0, 0, 1
+                            on_active: root.on_select_all_checkbox(self.active, event_list_container)
+                        BoxLayout:
+                            size_hint_x: 0.04
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            CustomLabel:
+                                text: '[b]Title[/b]'
+                                size_hint_x: 0.2
+                            CustomLabel:
+                                text: '[b]Description[/b]'
+                                size_hint_x: 0.59
+                        BoxLayout:
+                            size_hint_x: 0.15
+                    CustomScrollView:
+                        GridLayout:
+                            id: event_list_container
+                            cols: 1
+                            spacing: '15sp'
+                            padding: [0, 15]
+                            size_hint_y: None
+                            height: self.minimum_height
+                            row_default_height: 144
+
+        TabbedPanelItem:
+            text: 'Scheduler'
+            BoxLayout:
+                padding: '2sp'
+                spacing: '2sp'
+                orientation: 'vertical'
+
+                BoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: 0.075
+                    Spinner:
+                        id: event
+                        text: 'Choose Event'
+                        text_size: 200, self.height
+                        halign: 'center'
+                        valign: 'center'
+                        shorten: True
+                        shorten_from: 'right'
+                        values: [value for value in root.event_values]
+                        sync_height: True
+                        dropdown_cls: Factory.AddEventLimit
+                        option_cls: Factory.AddEventStyle
+                    Spinner:
+                        id: venue
+                        text: 'Choose Venue'
+                        text_size: 200, self.height
+                        halign: 'center'
+                        valign: 'center'
+                        shorten: True
+                        shorten_from: 'right'
+                        values: [value for value in root.venue_values]
+                        sync_height: True
+                        dropdown_cls: Factory.AddEventLimit
+                        option_cls: Factory.AddEventStyle
+                    Button:
+                        text: 'Schedule Event'
+                        disabled: True if event.text == 'Choose Event' or venue.text == 'Choose Venue' else False
+                        on_release: root.on_schedule_event_button_click(event.text, venue.text)
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y: 0.85
+
+                    BoxLayout:
+                        size_hint_y: 0.075
+                        Button:
+                            text: 'Unschedule / Delete Selected'
+                            on_release: root.on_unschedule_event_button_click()
+                    CustomBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint_y: 0.075
+
+                        CheckBox:
+                            id: scheduler_list_checkbox
+                            size_hint_x: 0.075
+                            color: 0, 0, 0, 1
+                            on_active: root.on_select_all_checkbox(self.active, scheduler_list_container)
+                        BoxLayout:
+                            size_hint_x: 0.04
+                        BoxLayout:
+                            orientation: 'horizontal'
+                            CustomLabel:
+                                text: '[b]Event[/b]'
+                            CustomLabel:
+                                text: '[b]Venue[/b]'
+                            CustomLabel:
+                                text: '[b]Start Date[/b]'
+                            CustomLabel:
+                                text: '[b]End Date[/b]'
+                    CustomScrollView:
+                        GridLayout:
+                            id: scheduler_list_container
+                            cols: 1
+                            size_hint_y: None
+                            height: self.minimum_height
+                            row_default_height: 44
+
+                BoxLayout:
+                    size_hint_y: 0.075
+                    Button:
+                        text: 'Export Event(s)'
+                        disabled: True if len(scheduler_list_container.children) <= 0 else False
+                        on_release: root.on_export_button_click()
+
+        TabbedPanelItem:
+            id: settings
+            text: 'Settings'
+
+<EventSchedulerScreen>:
+    CustomAnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: '2sp'
+            spacing: '10sp'
+            size_hint: 0.35, 0.325
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint_y: 0.82
+                Label:
+                    text: 'Username'
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'center'
+                TextInput:
+                    id: username
+                    multiline: False
+                    hint_text: 'CWL username'
+                    write_tab: False
+                Label:
+                    text: 'Password'
+                    text_size: self.size
+                    halign: 'left'
+                    valign: 'center'
+                TextInput:
+                    id: password
+                    multiline: False
+                    password: True
+                    hint_text: 'CWL password'
+                    allow_copy: False
+                    write_tab: False
+                    on_text_validate:
+                        if len(username.text) > 0 and len(password.text) > 0: \
+                        root.on_connect_button_click(''.join(str(username.text).split()), password.text)
+                Label:
+                    markup: True
+                    text: '[i]' + root.error + '[/i]'
+                    text_size: self.size
+                    font_size: '13sp'
+                    halign: 'center'
+                    valign: 'center'
+            BoxLayout:
+                spacing: '2sp'
+                orientation: 'horizontal'
+                size_hint_y: 0.18
+                Button:
+                    id: connect
+                    text: 'Connect'
+                    disabled: True if len(username.text) <= 0 or len(password.text) <= 0 else False
+                    on_release: root.on_connect_button_click(''.join(str(username.text).split()), password.text)
