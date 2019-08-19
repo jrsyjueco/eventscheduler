@@ -1067,9 +1067,10 @@ class ExportSetting(SettingPath):
         self.popup = popup = Popup(title=self.title, title_align='center', content=ep, size_hint=(0.8, 0.67),
                                    auto_dismiss=False)
 
-        initial_path = self.value or os.getcwd()
+        initial_path = self.value if os.path.isdir(self.value) else os.getcwd()
         self.textinput = textinput = FileChooserIconView(path=initial_path, size_hint_y=0.9, dirselect=True,
                                                          filters=[self.is_dir])
+        textinput.layout.children[0].effect_cls = 'ScrollEffect'
         textinput.bind(on_path=self._validate)
 
         save = Button(text='Save', on_release=self._validate)
@@ -1118,11 +1119,8 @@ class EventSchedulerMain(Screen):
 
     def populate_storage(self):
         storage = os.path.join(os.getcwd(), STORAGE)
-
-        try:
+        if not os.path.isdir(storage):
             os.mkdir(storage)
-        except FileExistsError:
-            pass
 
         self.contacts = JsonStore(os.path.join(storage, 'contacts.json'))
         self.venues = JsonStore(os.path.join(storage, 'venues.json'))
@@ -1712,10 +1710,8 @@ class EventSchedulerApp(App):
         config.setdefaults('scheduler', {'mailbox': 'arts.workshop@ubc.ca'})
 
         events = os.path.join(os.getcwd(), EVENTS)
-        try:
+        if not os.path.isdir(events):
             os.mkdir(events)
-        except FileExistsError:
-            pass
         config.setdefaults('scheduler', {'path': events})
 
         config.setdefaults('scheduler', {'export': '0'})
