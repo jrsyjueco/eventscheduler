@@ -1,6 +1,6 @@
 # Event Scheduler #
 
-Event Scheduler is a workshop management application created for the _Arts Instructional Support and Information Technology_ unit at the _University of British Columbia_. By leveraging Exchange Web Services (EWS) and the iCalendar data format, Event Scheduler helps streamline the booking and creation of workshops on Microsoft Outlook and WordPress. All of this is performed through an easy-to-use user interface, which also allows you to add attendees, a room list, workshop categories, and workshop types.
+Event Scheduler is a workshop management application created for the _Arts Instructional Support and Information Technology_ unit at the _University of British Columbia_. By leveraging Exchange Web Services (EWS) and the iCalendar data format, Event Scheduler helps streamline the booking and creation of workshops on Microsoft Outlook and WordPress. All of this is performed through an easy-to-use user interface, which allows for the adding of attendees, a room list, workshop categories and workshop types.
 
 ### Requires ###
 
